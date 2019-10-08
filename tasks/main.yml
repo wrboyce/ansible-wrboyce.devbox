@@ -1,0 +1,26 @@
+---
+- name: bootstrap
+  include_tasks: bootstrap.yml
+
+- name: docker
+  include_tasks: docker.yml
+  when: docker__enabled
+
+- name: golang
+  include_tasks: golang.yml
+  when: golang__enabled
+
+- name: nodejs
+  include_tasks: nodejs.yml
+  when: nodejs__enabled
+
+- name: python
+  include_tasks: python.yml
+  when: python__enabled
+
+- name: rust
+  include_tasks: rust.yml
+  when: rust__enabled
+
+- name: vscode
+  include_tasks: vscode.yml

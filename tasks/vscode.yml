@@ -1,0 +1,54 @@
+---
+- name: 'vscode : check binary'
+  stat:
+    path: '{{ vscode__install_path }}/code-server'
+    checksum_algorithm: sha256
+  register: bin
+  become: yes
+
+- name: 'vscode : create temporary install directory'
+  tempfile:
+    prefix: vscode
+    state: directory
+  register: tmp
+  when: not bin.stat.exists or bin.stat.checksum != 'f2cf5cd6c61208e10d4f53bb9a0e439f6f55d8d2f9d1070f89a80c2c152b5e77'
+  become: yes
+
+- name: 'vscode : download and extract (v{{ vscode__version }})'
+  unarchive:
+    src: 'https://github.com/cdr/code-server/releases/download/{{ vscode__version }}/code-server{{ vscode__version }}-linux-x86_64.tar.gz'
+    remote_src: yes
+    dest: '{{ tmp.path }}'
+  when: not bin.stat.exists or bin.stat.checksum != 'f2cf5cd6c61208e10d4f53bb9a0e439f6f55d8d2f9d1070f89a80c2c152b5e77'
+  become: yes
+
+- name: 'vscode : install binary'
+  copy:
+    src: '{{ tmp.path }}/code-server{{ vscode__version }}-linux-x86_64/code-server'
+    remote_src: yes
+    dest: '{{ vscode__install_path }}/code-server'
+    mode: 0775
+  become: yes
+  when: not bin.stat.exists or bin.stat.checksum != 'f2cf5cd6c61208e10d4f53bb9a0e439f6f55d8d2f9d1070f89a80c2c152b5e77'
+
+- name: 'vscode : install initial user config'
+  get_url:
+    url: 'https://gist.githubusercontent.com/{{ username }}/d2ec8cdccefb20b37f0df640a25e04ee/raw/bff69dc61977690f535e42493d53696cc0123f08/settings.json'
+    dest: '/home/{{ username }}/.local/share/code-server/User/settings.json'
+  # when it doesn't already exist
+  become: no
+
+- name: 'vscode : create systemd service'
+  template:
+    src: vscode.service.j2
+    dest: '/home/{{ username }}/.config/systemd/user/default.target.wants/vscode.service'
+  become: no
+
+- name: 'vscode : enable systemd service'
+  systemd:
+    name: vscode
+    scope: user
+    # enabled: yes
+    state: started
+    daemon_reload: yes
+  become: no

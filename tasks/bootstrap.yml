@@ -1,0 +1,38 @@
+---
+- name: 'bootstrap : install apt packages'
+  apt:
+    name: aptitude
+    state: present
+  become: yes
+
+- name: 'bootstrap : grant {{ username }} full sudo access'
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    line: '{{ username }} ALL=(ALL:ALL) NOPASSWD:ALL'
+  become: yes
+
+- name: 'bootstrap : ensure user systemd dir exists'
+  file:
+    path: /home/{{ username }}/.config/systemd/user/default.target.wants
+    state: directory
+    recurse: yes
+  become: no
+
+- name: 'bootstrap : fetch public ssh keys from github'
+  authorized_key:
+    user: '{{ username }}'
+    state: present
+    key: '{{ item }}'
+  loop: "{{ lookup('url', 'https://github.com/{{ username }}.keys', wantlist=True) }}"
+  become: no
+  when: bootstrap__fetch_github_sshkeys
+
+- name: 'bootstrap : fetch public ssh keys from keybase'
+  authorized_key:
+    user: '{{ username }}'
+    state: present
+    key: '{{ item }}'
+  loop: "{{ lookup('url', 'https://keybase.pub/{{ username }}/{{ bootstrap__keybase_sshkeys_path }}', wantlist=True) }}"
+  become: no
+  when: bootstrap__fetch_keybase_sshkeys

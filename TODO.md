@@ -1,0 +1,5 @@
+- [ ] s/disco/{{ ansible_somevar }}/
+- [ ] fix github
+- [ ] zsh
+- [ ] ntp
+- [ ] ...

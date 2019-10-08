@@ -1,0 +1,16 @@
+---
+- name: 'golang : add apt repository'
+  apt_repository:
+    repo: ppa:longsleep/golang-backports
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: 'golang : install apt packages'
+  apt:
+    name: '{{ packages }}'
+    state: present
+  vars:
+    packages:
+      - golang-go
+  become: yes

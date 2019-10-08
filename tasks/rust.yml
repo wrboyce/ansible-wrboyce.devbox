@@ -1,0 +1,11 @@
+---
+- name: 'rust : check for existing installation'
+  stat:
+    path: '/home/{{ username }}/.cargo/bin/rustc'
+  register: rustup
+  become: no
+
+- name: 'rust : install'
+  shell: curl -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain {{ rust__default_toolchain}}
+  when: not rustup.stat.exists
+  become: no

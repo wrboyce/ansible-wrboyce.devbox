@@ -1,0 +1,23 @@
+---
+# global
+username: wrboyce
+github_username: {{ username }}
+keybase_username: {{ username }}
+# bootstrap
+bootstrap__fetch_github_sshkeys: yes
+bootstrap__fetch_keybase_sshkeys: yes
+bootstrap__keybase_sshkeys_path: ssh-keys.txt
+# docker
+docker__enabled: yes
+# golang
+golang__enabled: yes
+# nodejs
+nodejs__enabled: yes
+# python
+python__enabled: yes
+# rust
+rust__enabled: yes
+rust__default_toolchain: nightly
+# vscode
+vscode__install_path: /usr/local/bin
+vscode__version: 2.1523-vsc1.38.1

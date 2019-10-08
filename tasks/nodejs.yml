@@ -1,0 +1,22 @@
+---
+- name:  'nodejs : add apt key'
+  apt_key:
+    url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+    state: present
+  become: yes
+
+- name: 'nodejs : add apt repository'
+  apt_repository:
+    repo: deb https://deb.nodesource.com/node_10.x disco main
+    state: present
+    update_cache: yes
+  become: yes
+
+- name: 'nodejs : install apt packages'
+  apt:
+    name: '{{ packages }}'
+    state: present
+  vars:
+    packages:
+      - nodejs
+  become: yes
